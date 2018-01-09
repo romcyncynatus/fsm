@@ -47,8 +47,17 @@ function canvasHasFocus() {
 
 function drawText(c, originalText, x, y, angleOrNull, isSelected) {
 	text = convertLatexShortcuts(originalText);
+	var lines = text.split('\n');
 	c.font = '20px "Times New Roman", serif';
-	var width = c.measureText(text).width;
+	var width = 0;
+	var last_line_width = 0;
+	for (var i = 0; i < lines.length; i++) {
+		var line_width = c.measureText(lines[i]).width;
+		last_line_width = line_width;
+		if (line_width > width) {
+			width = line_width;
+		}
+	}
 
 	// center the text
 	x -= width / 2;
@@ -70,9 +79,16 @@ function drawText(c, originalText, x, y, angleOrNull, isSelected) {
 	} else {
 		x = Math.round(x);
 		y = Math.round(y);
-		c.fillText(text, x, y + 6);
+		var is_down = (angleOrNull && angleOrNull > 0);
+		for (var i = 0; i < lines.length; i++) {
+			var line_index = (is_down) ? i : (lines.length - i - 1);
+			c.fillText(lines[line_index], x, y + 6 + 15 * i * ((is_down) ? 1 : -1));
+		}
 		if(isSelected && caretVisible && canvasHasFocus() && document.hasFocus()) {
-			x += width;
+			if (is_down) {
+				y += 15 * (lines.length - 1);
+			}
+			x += last_line_width;
 			c.beginPath();
 			c.moveTo(x, y - 10);
 			c.lineTo(x, y + 10);
@@ -315,8 +331,8 @@ document.onkeypress = function(e) {
 	if(!canvasHasFocus()) {
 		// don't read keystrokes when other things have focus
 		return true;
-	} else if(key >= 0x20 && key <= 0x7E && !e.metaKey && !e.altKey && !e.ctrlKey && selectedObject != null && 'text' in selectedObject) {
-		selectedObject.text += String.fromCharCode(key);
+	} else if((key == 0xD || (key >= 0x20 && key <= 0x7E)) && !e.metaKey && !e.altKey && !e.ctrlKey && selectedObject != null && 'text' in selectedObject) {
+		selectedObject.text += String.fromCharCode(key).replace('\r', '\n');
 		resetCaret();
 		draw();
 
