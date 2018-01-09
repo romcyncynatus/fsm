@@ -1,3 +1,7 @@
 # Finite State Machine Designer
 
-http://madebyevan.com/fsm/
+Original work: http://madebyevan.com/fsm/
+
+#### Changes:
+- Added newlines support.
+- Added ability to insert a right pointing arrow symbol by typing "->".
