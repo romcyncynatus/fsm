@@ -6,6 +6,7 @@ function convertLatexShortcuts(text) {
 		var name = greekLetterNames[i];
 		text = text.replace(new RegExp('\\\\' + name, 'g'), String.fromCharCode(913 + i + (i > 16)));
 		text = text.replace(new RegExp('\\\\' + name.toLowerCase(), 'g'), String.fromCharCode(945 + i + (i > 16)));
+		text = text.replace(new RegExp('->', 'g'), String.fromCharCode(8594));
 	}
 
 	// subscripts
